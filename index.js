@@ -35,6 +35,7 @@ authenticate = function (req, res, done) {
 	if (credentials) {
 		let query = db.query("select * from user where username = '" + credentials.name + "' and password = '" + credentials.pass + "'", (err,rows) => {
 			if (rows.length === 0) {
+				console.log(rows);
 				res.status(401);
 				res.send('Unauthorized');
 				return;
@@ -67,7 +68,7 @@ getChannelMessages = function (req, res) {
 	authenticate(req, res, function () {
 		let n = req.url.lastIndexOf('/');
 		let channelGUID = req.url.substring(n + 1);
-		let query = db.query("select * from message where channel_guid = '" + channelGUID + "'", (err,rows) => {
+		let query = db.query("select * from message where channel_guid = '" + channelGUID + "' ORDER BY timestamp DESC LIMIT 25", (err,rows) => {
 			rows.forEach( (row) => {
 				result.push({
 					"guid": row.guid,
@@ -76,6 +77,7 @@ getChannelMessages = function (req, res) {
 					"content": row.content
 				});
 			});
+			result.reverse();
 			res.send(JSON.stringify(result));
 		});
 
@@ -92,7 +94,7 @@ publishMessage = function (req, res) {
 		db.query("INSERT into message(guid,channel_guid,username, content) VALUES ('" + guid() + "','" + channelGUID + "','" + username +  "','" + content +"')");
 
 		// return back all messages for channel in response
-		let query = db.query("select * from message where channel_guid = '" + channelGUID + "'", (err,rows) => {
+		let query = db.query("select * from message where channel_guid = '" + channelGUID + "' ORDER BY id DESC LIMIT 25", (err,rows) => {
 			rows.forEach( (row) => {
 				result.push({
 					"guid": row.guid,
@@ -101,6 +103,7 @@ publishMessage = function (req, res) {
 					"content": row.content
 				});
 			});
+			result.reverse();
 			res.send(JSON.stringify(result));
 
 		});
