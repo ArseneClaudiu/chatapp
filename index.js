@@ -141,6 +141,6 @@ app.post('/chatserver/publish/*', publishMessage);
 app.post('/chatserver/register/', userRegister);
 app.post('/chatserver/userinfo/*', userInfo);
 
-app.listen(3000, function () {
+app.listen(8080, function () {
 	console.log('Chat server listening on port 3000!')
 })
