@@ -41,6 +41,7 @@ authenticate = function (req, res, done) {
 				return;
 			}
 			req.userGUID = rows[0].uid;
+			req.username = rows[0].username;
 			done();
 		});
 	}
@@ -86,12 +87,16 @@ getChannelMessages = function (req, res) {
 
 publishMessage = function (req, res) {
 	let result = [];
+	let user;
 	authenticate(req, res, function () {
 		let n = req.url.lastIndexOf('/');
 		let channelGUID = req.url.substring(n + 1);
 		let username = req.body.username;
+		db.query("SELECT * FROM user where username = '" + username + "'", (err, rows) => {
+			user = rows[0].username;
+		});
 		let content = req.body.content;
-		db.query("INSERT into message(guid,channel_guid,username, content) VALUES ('" + guid() + "','" + channelGUID + "','" + username +  "','" + content +"')");
+		db.query("INSERT into message(guid,channel_guid,username, content) VALUES ('" + guid() + "','" + channelGUID + "','" + user +  "','" + content +"')");
 
 		// return back all messages for channel in response
 		let query = db.query("select * from message where channel_guid = '" + channelGUID + "' ORDER BY id DESC LIMIT 25", (err,rows) => {
@@ -141,10 +146,6 @@ app.post('/chatserver/publish/*', publishMessage);
 app.post('/chatserver/register/', userRegister);
 app.post('/chatserver/userinfo/*', userInfo);
 
-app.listen(8080, function () {
-	console.log('Chat server listening on port 3000!')
+app.listen(80, function () {
+	console.log('Chat server listening on port 80!')
 })
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}.`);
-});
