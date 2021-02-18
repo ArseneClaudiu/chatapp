@@ -145,7 +145,3 @@ app.get('/chatserver/messages/*', getChannelMessages);
 app.post('/chatserver/publish/*', publishMessage);
 app.post('/chatserver/register/', userRegister);
 app.post('/chatserver/userinfo/*', userInfo);
-
-app.listen(80, function () {
-	console.log('Chat server listening on port 80!')
-})
