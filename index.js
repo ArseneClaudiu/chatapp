@@ -149,3 +149,7 @@ app.post('/chatserver/userinfo/*', userInfo);
 app.listen(80, function () {
 	console.log('Chat server listening on port 80!')
 })
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+	console.log(`Server is running on port ${PORT}.`);
+});
